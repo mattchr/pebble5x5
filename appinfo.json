@@ -1,0 +1,20 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "mattchr@gmail.com",
+    "enableMultiJS": true,
+    "longName": "5x5",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "5x5",
+    "uuid": "18d24015-f7e9-4219-b588-edd093b959ca",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
