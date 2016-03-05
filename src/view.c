@@ -6,7 +6,7 @@ void open_view(const View *view) {
 }
 
 const View* ViewButtonPress(const View *view, Button button) {
-  View *next;
+  const View *next;
   switch(button) {
     case BUTTON_TOP:
       next = view->next_top;
@@ -16,9 +16,6 @@ const View* ViewButtonPress(const View *view, Button button) {
       break;
     case BUTTON_BOTTOM:
       next = view->next_bottom;
-      break;
-    case BUTTON_BACK:
-      next = view->back;
       break;
     default:
       next = NULL;

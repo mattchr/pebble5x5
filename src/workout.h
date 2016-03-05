@@ -1,6 +1,8 @@
 #pragma once
 #include <pebble.h>
 
+#define WORKOUT_DISPLAY_LEN 100
+
 typedef enum {
   WORKOUT_A,
   WORKOUT_B,
