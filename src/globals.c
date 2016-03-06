@@ -1,4 +1,3 @@
-#include <pebble.h>
 #include "globals.h"
 
 Window *window;
@@ -24,6 +23,16 @@ void set_center_tl(const char *text, const char *font) {
 void set_down_tl(const char *text, const char *font) {    
     set_tl(down_tl, text, font);
 }
+
+Layer *get_window_layer(void) {
+    return window_get_root_layer(window);
+}
+
+GRect get_window_bounds(void) {
+    return  layer_get_bounds(get_window_layer());
+}
+
+
 
 
 void init_globals(void) {

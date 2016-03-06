@@ -32,3 +32,4 @@ typedef struct {
 
 void workout_day(char* output, size_t maxsize, Workout *w);
 void build_workout_string(char* output, Workout *w, WorkoutTime time);
+TextLayer *create_workout_tl(Workout *w, GPoint location);

@@ -13,6 +13,9 @@ typedef struct View {
   const struct View *next_top;
   const struct View *next_center;
   const struct View *next_bottom;
+  void (*top_pressed)(void);
+  void (*center_pressed)(void);
+  void (*bottom_pressed)(void);
 } View;
 
 void open_view(const View *view);
