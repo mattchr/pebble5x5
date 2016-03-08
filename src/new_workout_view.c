@@ -39,8 +39,9 @@ static void update_new_workout(Workout *w) {
 }
 
 void new_workout_view_constructor(void) {
-    set_center_tl("Save", FONT_KEY_GOTHIC_18_BOLD);
+    set_center_tl("Start", FONT_KEY_GOTHIC_18_BOLD);
     set_down_tl("Cancel", FONT_KEY_GOTHIC_18_BOLD);
+    set_up_tl("Edit", FONT_KEY_GOTHIC_18_BOLD);
     Workout workout;
     workout.type = WORKOUT_A;
     workout.squat = 135;
@@ -52,9 +53,8 @@ void new_workout_view_constructor(void) {
     
 
 void new_workout_view_destructor(void) {
-    text_layer_set_text(center_tl, "");
-    text_layer_set_text(down_tl, "");
-    
+    clear_button_tls();
+    text_layer_destroy(new_workout_tl);
 }
 
 //======================================================================

@@ -32,26 +32,28 @@ static void update_previous_workout(Workout *w) {
 
 static void update_next_workout(Workout *w) {
     next_workout_tl = create_workout_tl(w, (GPoint){(get_window_bounds().size.w * 2) / 3 - 35, get_window_bounds().size.h / 2 - 40});
-    build_workout_string(main_window.next_workout_string, w, WORKOUT_PREVIOUS);
+    build_workout_string(main_window.next_workout_string, w, WORKOUT_NEXT);
     text_layer_set_text(next_workout_tl, main_window.next_workout_string);
 }
 
 void main_view_constructor(void) {
     Workout workout;
-    workout.type = WORKOUT_A;
-    workout.squat = 135;
-    workout.bench = 120;
-    workout.row = 100;
-    workout.timestamp = time(0);
-    update_previous_workout(&workout);
-    //   text_layer_set_font(last_workout_tl, fonts_get_system_font(FONT_KEY_GOTHIC_28 ));
-
-    workout.type = WORKOUT_B;
-    workout.squat = 140;
-    workout.overhead = 100;
-    workout.deadlift = 225;
-    workout.timestamp = time(0);
+//    workout.type = WORKOUT_A;
+//    workout.squat = 135;
+//    workout.bench = 120;
+//    workout.row = 100;
+//    workout.timestamp = time(0);
+    if (loadPreviousWorkout(&workout)) {
+        update_previous_workout(&workout);
+    }
+        //   text_layer_set_font(last_workout_tl, fonts_get_system_font(FONT_KEY_GOTHIC_28 ));
+    loadNextWorkout(&workout);
     update_next_workout(&workout);
+//    workout.squat = 140;
+//    workout.overhead = 100;
+//    workout.deadlift = 225;
+//    workout.timestamp = time(0);
+//    update_next_workout(&workout);
     set_center_tl("+", FONT_KEY_GOTHIC_28);
 }
 

@@ -63,10 +63,6 @@ static void window_load(Window *window) {
     Layer *window_layer = window_get_root_layer(window);
     GRect bounds = layer_get_bounds(window_layer);
     init_globals();
-    text_layer_set_text_alignment(center_tl, GTextAlignmentRight);
-    layer_add_child(window_layer, text_layer_get_layer(center_tl));
-    text_layer_set_text_alignment(down_tl, GTextAlignmentRight);
-    layer_add_child(window_layer, text_layer_get_layer(down_tl));
 
 
     time_tl = text_layer_create((GRect) {

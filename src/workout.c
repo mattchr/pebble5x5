@@ -33,3 +33,27 @@ void build_workout_string(char* output, Workout *w, WorkoutTime time) {
     snprintf(&output[strlen(output)], WORKOUT_DISPLAY_LEN, "B: \nSQ: %d\nOP: %d\nDL: %d", w->squat, w->overhead, w->deadlift); 
   }
 }
+
+void loadDefaultWorkout(Workout *output) {
+    output->type = WORKOUT_A;
+    output->timestamp = time(0);
+    output->bench = 45;
+    output->squat = 45;
+    output->row = 65;
+}
+
+bool loadPreviousWorkout(Workout *output) {
+    if (!persist_exists(STORAGE_PREV_WORKOUT)) return false;
+    if (persist_read_data(STORAGE_PREV_WORKOUT, (void*)output, sizeof(Workout)) != sizeof(Workout)) return false;
+    return true;
+}
+
+void loadNextWorkout(Workout *output) {
+    if (!persist_exists(STORAGE_NEXT_WORKOUT)) {
+        loadDefaultWorkout(output);
+        persist_write_data(STORAGE_NEXT_WORKOUT, (void*)output, sizeof(Workout));
+        return;
+    }
+    persist_read_data(STORAGE_NEXT_WORKOUT, (void*)output, sizeof(Workout));
+}
+
