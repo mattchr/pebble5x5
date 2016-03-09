@@ -43,11 +43,11 @@ void main_view_constructor(void) {
 //    workout.bench = 120;
 //    workout.row = 100;
 //    workout.timestamp = time(0);
-    if (loadPreviousWorkout(&workout)) {
+    if (load_previous_workout(&workout)) {
         update_previous_workout(&workout);
     }
         //   text_layer_set_font(last_workout_tl, fonts_get_system_font(FONT_KEY_GOTHIC_28 ));
-    loadNextWorkout(&workout);
+    load_next_workout(&workout);
     update_next_workout(&workout);
 //    workout.squat = 140;
 //    workout.overhead = 100;
@@ -67,10 +67,10 @@ const View main_view = {
     .constructor = main_view_constructor,
     .destructor = main_view_destructor,
     .next_top = NULL,
-    .next_center = &new_workout_view,
+    .next_select = &new_workout_view,
     .next_bottom = NULL,
     .top_pressed = NULL,
     .bottom_pressed = NULL,
-    .center_pressed = NULL,
+    .select_pressed = NULL,
 };
 

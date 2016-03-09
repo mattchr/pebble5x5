@@ -15,23 +15,26 @@ typedef enum {
 } WorkoutTime;
 
 typedef struct {
-  WorkoutType type;  
-  int squat;
-  time_t timestamp;
-  union {
-    struct {
-      int bench;
-      int row;
+    WorkoutType type;  
+    time_t timestamp;
+    int squat;
+    union {
+      struct {
+        int bench;
+        int row;
+      };
+      struct {
+        int overhead;
+        int deadlift;
+      };
     };
-    struct {
-      int overhead;
-      int deadlift;
-    };
-  };
 } Workout;
 
 void workout_day(char* output, size_t maxsize, Workout *w);
 void build_workout_string(char* output, Workout *w, WorkoutTime time);
 TextLayer *create_workout_tl(Workout *w, GPoint location);
-bool loadPreviousWorkout(Workout *output);
-void loadNextWorkout(Workout *output);
+bool load_previous_workout(Workout *output);
+void load_next_workout(Workout *output);
+void save_previous_workout(Workout *workout);
+void save_next_workout(Workout *workout);
+void calculate_next_workout(Workout *next);

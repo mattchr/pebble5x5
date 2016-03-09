@@ -5,6 +5,10 @@
 #include "globals.h"
 
 //======================================================================
+// Private Functions
+//======================================================================
+
+//======================================================================
 // Public Functions
 //======================================================================
 TextLayer *create_workout_tl(Workout *w, GPoint location) {
@@ -34,7 +38,7 @@ void build_workout_string(char* output, Workout *w, WorkoutTime time) {
   }
 }
 
-void loadDefaultWorkout(Workout *output) {
+void load_default_workout(Workout *output) {
     output->type = WORKOUT_A;
     output->timestamp = time(0);
     output->bench = 45;
@@ -42,18 +46,55 @@ void loadDefaultWorkout(Workout *output) {
     output->row = 65;
 }
 
-bool loadPreviousWorkout(Workout *output) {
+bool load_previous_workout(Workout *output) {
     if (!persist_exists(STORAGE_PREV_WORKOUT)) return false;
     if (persist_read_data(STORAGE_PREV_WORKOUT, (void*)output, sizeof(Workout)) != sizeof(Workout)) return false;
     return true;
 }
 
-void loadNextWorkout(Workout *output) {
+void load_next_workout(Workout *output) {
     if (!persist_exists(STORAGE_NEXT_WORKOUT)) {
-        loadDefaultWorkout(output);
+        load_default_workout(output);
         persist_write_data(STORAGE_NEXT_WORKOUT, (void*)output, sizeof(Workout));
         return;
     }
     persist_read_data(STORAGE_NEXT_WORKOUT, (void*)output, sizeof(Workout));
 }
 
+void save_previous_workout(Workout *workout) {
+    persist_write_data(STORAGE_PREV_WORKOUT, (void*)workout, sizeof(Workout));
+}
+
+void save_next_workout(Workout *workout) {
+    persist_write_data(STORAGE_NEXT_WORKOUT, (void*)workout, sizeof(Workout));
+}
+
+void calculate_next_workout(Workout *next) {
+    Workout previous, current;
+    bool previous_exists = load_previous_workout(&previous);
+    if (!previous_exists) {
+        load_default_workout(&previous);
+    }
+    load_next_workout(&current);
+    next->squat = current.squat + 5;
+    if (current.type == WORKOUT_A) {
+        next->type = WORKOUT_B;
+        if (previous_exists) {
+            next->overhead = previous.overhead + 5;
+            next->deadlift = previous.deadlift + 10;
+        } else {
+            next->overhead = previous.overhead;
+            next->deadlift = previous.deadlift;            
+        }
+    } else {
+        next->type = WORKOUT_A;
+        if (previous_exists) {
+            next->bench = previous.bench + 5;
+            next->row = previous.row + 5;
+        } else {
+            next->bench = previous.bench;
+            next->row = previous.row;
+        }
+    }
+    next->timestamp = time(0);
+}

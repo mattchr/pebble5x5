@@ -17,22 +17,18 @@ typedef struct {
 
 MainWindow main_window;
 
-static TextLayer *last_workout_tl;
-static TextLayer *next_workout_tl;
-const View *current_view;
-
 char time_string[TIME_BUFFER_MAX_LEN];
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-    current_view = ViewButtonPress(current_view, BUTTON_CENTER);
+    ViewButtonPress(BUTTON_CENTER);
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-    current_view = ViewButtonPress(current_view, BUTTON_TOP);
+    ViewButtonPress(BUTTON_TOP);
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-    current_view = ViewButtonPress(current_view, BUTTON_BOTTOM);
+    ViewButtonPress(BUTTON_BOTTOM);
 }
 
 static void click_config_provider(void *context) {
@@ -83,6 +79,7 @@ static void window_unload(Window *window) {
 }
 
 static void init(void) {
+//    clear_storage();
     window = window_create();
     window_set_click_config_provider(window, click_config_provider);
 
