@@ -35,7 +35,7 @@ char new_workout_string[WORKOUT_DISPLAY_LEN];
 // Private Functions
 //======================================================================
 static void update_new_workout(Workout *w) {
-    new_workout_tl = create_workout_tl(w, (GPoint){get_window_bounds().size.w / 2 - 50, get_window_bounds().size.h / 2 - 40});
+    new_workout_tl = create_workout_tl(w, (GPoint){get_window_bounds().size.w / 2 - 50, 30});
     build_workout_string(new_workout_string, w, WORKOUT_NEXT);
     text_layer_set_text(new_workout_tl, new_workout_string);
 }

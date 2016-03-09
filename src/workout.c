@@ -13,9 +13,11 @@
 //======================================================================
 TextLayer *create_workout_tl(Workout *w, GPoint location) {
     Layer *window_layer = window_get_root_layer(window);
-    TextLayer *tl = text_layer_create((GRect) { .origin=location, .size ={ 70, 80}});
+    TextLayer *tl = text_layer_create((GRect) { .origin=location, .size ={ 70, 100}});
     text_layer_set_text_alignment(tl, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(tl));
+    text_layer_set_font(tl, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+//    text_layer_set_background_color(tl, GColorRed);
     return tl;
 }
 void workout_day(char* output, size_t maxsize, Workout *w) {

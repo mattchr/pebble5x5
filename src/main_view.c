@@ -25,13 +25,13 @@ MainWindow main_window;
 // Private Functions
 //======================================================================
 static void update_previous_workout(Workout *w) {
-    last_workout_tl = create_workout_tl(w, (GPoint){get_window_bounds().size.w / 4 - 35, get_window_bounds().size.h / 2 - 40});
+    last_workout_tl = create_workout_tl(w, (GPoint){get_window_bounds().size.w / 3 - 35, get_window_bounds().size.h / 2 - 50});
     build_workout_string(main_window.prev_workout_string, w, WORKOUT_PREVIOUS);
     text_layer_set_text(last_workout_tl, main_window.prev_workout_string);
 }
 
 static void update_next_workout(Workout *w) {
-    next_workout_tl = create_workout_tl(w, (GPoint){(get_window_bounds().size.w * 2) / 3 - 35, get_window_bounds().size.h / 2 - 40});
+    next_workout_tl = create_workout_tl(w, (GPoint){(get_window_bounds().size.w * 2) / 3 - 35, get_window_bounds().size.h / 2 - 50});
     build_workout_string(main_window.next_workout_string, w, WORKOUT_NEXT);
     text_layer_set_text(next_workout_tl, main_window.next_workout_string);
 }
