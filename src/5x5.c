@@ -48,11 +48,14 @@ void updateClock(void) {
 
 void clockTickHandler(struct tm *tick_time, TimeUnits units_changed) {
     updateClock();
+    layer_mark_dirty(text_layer_get_layer(time_tl));
 }
 
 static void initClock() {
-    updateClock();
     tick_timer_service_subscribe(MINUTE_UNIT, &clockTickHandler);
+    text_layer_set_font(time_tl, fonts_get_system_font(FONT_KEY_GOTHIC_28));
+    text_layer_set_text(time_tl, time_string);
+    updateClock();
 }
 
 static void window_load(Window *window) {
@@ -66,12 +69,11 @@ static void window_load(Window *window) {
         {bounds.size.w / 2 - TIME_TL_WIDTH / 2, 0}, .size =
         {TIME_TL_WIDTH, TIME_TL_HEIGHT}});
     //   text_layer_set_background_color(time_tl, GColorRed);
-    text_layer_set_text(time_tl, time_string);
     text_layer_set_text_alignment(time_tl, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(time_tl));
-    text_layer_set_font(time_tl, fonts_get_system_font(FONT_KEY_GOTHIC_28));
     current_view = &main_view;
     open_view(current_view);
+    initClock();
 }
 
 static void window_unload(Window *window) {
@@ -89,7 +91,6 @@ static void init(void) {
     });
     const bool animated = true;
     window_stack_push(window, animated);
-    initClock();
 }
 
 static void deinit(void) {

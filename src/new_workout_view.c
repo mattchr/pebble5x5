@@ -42,7 +42,7 @@ static void update_new_workout(Workout *w) {
 
 void new_workout_view_constructor(void) {
     set_center_tl("Start", FONT_KEY_GOTHIC_18_BOLD);
-    set_down_tl("Cancel", FONT_KEY_GOTHIC_18_BOLD);
+    set_down_tl("Back", FONT_KEY_GOTHIC_18_BOLD);
     set_up_tl("Edit", FONT_KEY_GOTHIC_18_BOLD);
     Workout workout;
     load_next_workout(&workout);
