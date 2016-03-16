@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "workout.h"
 #include "edit_workout_view.h"
+#include "active_workout_view.h"
 
 //======================================================================
 // Private Definitions
@@ -18,11 +19,11 @@ const View new_workout_view = {
     .constructor = new_workout_view_constructor,
     .destructor = new_workout_view_destructor,
     .next_top = &edit_workout_view,
-    .next_select = NULL,
+    .next_select = &active_workout_view,
     .next_bottom = &main_view,
     .top_pressed = NULL,
     .bottom_pressed = NULL,
-    .select_pressed = new_workout_view_select_handler,
+    .select_pressed = NULL,
 };
 
 //======================================================================

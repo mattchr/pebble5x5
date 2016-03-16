@@ -33,3 +33,4 @@ void set_up_tl(const char *text, const char *font);
 void init_globals(void);
 void clear_button_tls(void);
 void clear_storage(void);
+void align_text_layer_vertically(TextLayer *tl);

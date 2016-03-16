@@ -1,6 +1,16 @@
+//======================================================================
+// Includes
+//======================================================================
 #include "globals.h"
 #include "view.h"
 
+//======================================================================
+// Private Definitions
+//======================================================================
+
+//======================================================================
+// Static Variables
+//======================================================================
 Window *window;
 TextLayer *center_tl;
 TextLayer *down_tl;
@@ -8,14 +18,25 @@ TextLayer *up_tl;
 TextLayer *time_tl;
 const View *current_view;
 
+//======================================================================
+// Private Functions
+//======================================================================
+
+//======================================================================
+// Public Functions
+//======================================================================
+void align_text_layer_vertically(TextLayer *tl) {
+    GRect frame = layer_get_frame(text_layer_get_layer(tl));
+    GSize content_size = text_layer_get_content_size(tl);
+    layer_set_frame(text_layer_get_layer(tl), GRect(frame.origin.x, frame.origin.y + (frame.size.h - content_size.h) / 2, frame.size.w, content_size.h));
+}
+
 void set_tl(TextLayer *tl, const char *text, const char *font) {
     text_layer_set_text(tl, text);
     text_layer_set_font(tl, fonts_get_system_font(font));
     
       // Vertical alignment
-    GRect frame = layer_get_frame(text_layer_get_layer(tl));
-    GSize content_size = text_layer_get_content_size(tl);
-    layer_set_frame(text_layer_get_layer(tl), GRect(frame.origin.x, frame.origin.y + (frame.size.h - content_size.h) / 2, frame.size.w, content_size.h));
+    align_text_layer_vertically(tl);
     
     // Color
     text_layer_set_text_color(tl, GColorBlack);    
