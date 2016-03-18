@@ -6,10 +6,6 @@
 #include "main_view.h"
 #include "view.h"
 
-#define TIME_BUFFER_MAX_LEN  40
-#define TIME_TL_WIDTH 60
-#define TIME_TL_HEIGHT 40
-
 typedef struct {
     char prev_workout_string[WORKOUT_DISPLAY_LEN];
     char next_workout_string[WORKOUT_DISPLAY_LEN];
@@ -18,24 +14,6 @@ typedef struct {
 MainWindow main_window;
 
 char time_string[TIME_BUFFER_MAX_LEN];
-
-static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-    ViewButtonPress(BUTTON_CENTER);
-}
-
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-    ViewButtonPress(BUTTON_TOP);
-}
-
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-    ViewButtonPress(BUTTON_BOTTOM);
-}
-
-static void click_config_provider(void *context) {
-    window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
-    window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
-    window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
-}
 
 void updateClock(void) {
     time_t currentTime = time(NULL);
@@ -83,7 +61,7 @@ static void window_unload(Window *window) {
 static void init(void) {
 //    clear_storage();
     window = window_create();
-    window_set_click_config_provider(window, click_config_provider);
+    setup_click_config_for_view();
 
     window_set_window_handlers(window, (WindowHandlers) {
         .load = window_load,

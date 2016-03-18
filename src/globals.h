@@ -12,6 +12,10 @@ typedef enum {
 
 #define DEFAULT_BUTTON_FONT FONT_KEY_GOTHIC_18_BOLD
 
+#define TIME_BUFFER_MAX_LEN  40
+#define TIME_TL_WIDTH 60
+#define TIME_TL_HEIGHT 40
+
 //======================================================================
 // Externs
 //======================================================================
@@ -27,6 +31,7 @@ extern const struct View *current_view;
 //======================================================================
 Layer *get_window_layer(void);
 GRect get_window_bounds(void);
+GRect editable_window_bounds(void);
 void set_center_tl(const char *label, const char *font);
 void set_down_tl(const char *text, const char *font);
 void set_up_tl(const char *text, const char *font);

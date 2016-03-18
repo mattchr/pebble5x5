@@ -18,6 +18,7 @@ typedef struct View {
   void (*bottom_pressed)(void);
 } View;
 
+void setup_click_config_for_view(void);
 void open_view(const View *view);
 void close_view(const View *view);
 void ViewButtonPress(Button button) ;

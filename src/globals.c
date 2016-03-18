@@ -62,6 +62,15 @@ GRect get_window_bounds(void) {
     return  layer_get_bounds(get_window_layer());
 }
 
+GRect editable_window_bounds(void) {
+    return GRect(
+        0,
+        TIME_TL_HEIGHT,
+        get_window_bounds().size.w,
+        get_window_bounds().size.h - TIME_TL_HEIGHT
+    );
+}
+
 
 
 

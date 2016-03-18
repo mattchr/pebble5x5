@@ -1,10 +1,11 @@
-//======================================================================
+//===========================================================ftex===========
 // Includes
 //======================================================================
 #include "edit_workout_view.h"
 #include "globals.h"
 #include "workout.h"
 #include "new_workout_view.h"
+#include "workout.h"
 
 //======================================================================
 // Private Definitions
@@ -17,6 +18,7 @@ typedef enum {
     SELECTION_LIFT2,
     SELECTION_LIFT3,
     SELECTION_SAVE,
+    SELECTION_CHOICE_CNT,
 } SelectionIndex;
 
 //======================================================================
@@ -42,34 +44,30 @@ const View edit_workout_view = {
     .select_pressed = edit_workout_view_select_pressed,
 };
 
-typedef struct {
-    TextLayer *above_selection;
-    TextLayer *selection;
-    TextLayer *below_selection;
-
-    char selection_string[SELECTION_STRING_LEN];
-    char above_selection_string[SELECTION_STRING_LEN];
-    char below_selection_string[SELECTION_STRING_LEN];
-
-    SelectionIndex selection_index;
-    Workout workout;    
-    bool selected;
-} EditWorkoutViewData;
-
-EditWorkoutViewData *loc;
-
+Workout *workout_to_edit;
+MenuLayer *edit_workout_ml;
 
 //======================================================================
 // Private Functions
 //======================================================================
+void redraw_menu(void) {
+    layer_mark_dirty(menu_layer_get_layer(edit_workout_ml));    
+}
+
 void make_selection(void) {
-    loc->selected = true;
-    text_layer_set_background_color(loc->selection, GColorRed);
+    menu_layer_set_highlight_colors(edit_workout_ml, GColorRed, GColorWhite);
+    setup_click_config_for_view();
+    redraw_menu();
 }
 
 void unselect(void) {
-    loc->selected = false;
-    text_layer_set_background_color(loc->selection, GColorBlue);
+    menu_layer_set_highlight_colors(edit_workout_ml, GColorBlue, GColorWhite);
+    menu_layer_set_click_config_onto_window(edit_workout_ml, window);
+    redraw_menu();
+}
+
+SelectionIndex get_selection_index(void) {
+    return menu_layer_get_selected_index(edit_workout_ml).row;
 }
 
 const char *get_selection_text(SelectionIndex index) {
@@ -79,13 +77,13 @@ const char *get_selection_text(SelectionIndex index) {
         case SELECTION_LIFT1:
             return "SQUAT";
         case SELECTION_LIFT2:                          
-            if (loc->workout.type == WORKOUT_A) {
+            if (workout_to_edit->type == WORKOUT_A) {
                 return "BENCH";
             } else {
                 return "OVERHEAD";
             }
         case SELECTION_LIFT3:                         
-            if (loc->workout.type == WORKOUT_A) {
+            if (workout_to_edit->type == WORKOUT_A) {
                 return "ROW";
             } else {
                 return "DEADLIFT";
@@ -98,18 +96,18 @@ const char *get_selection_text(SelectionIndex index) {
 int get_selection_weight(SelectionIndex index) {
     switch (index) {
         case SELECTION_LIFT1:
-            return loc->workout.squat;
+            return workout_to_edit->squat;
         case SELECTION_LIFT2:                          
-            if (loc->workout.type == WORKOUT_A) {
-                return loc->workout.bench;
+            if (workout_to_edit->type == WORKOUT_A) {
+                return workout_to_edit->bench;
             } else {
-                return loc->workout.overhead;
+                return workout_to_edit->overhead;
             }
         case SELECTION_LIFT3:                         
-            if (loc->workout.type == WORKOUT_A) {
-                return loc->workout.row;
+            if (workout_to_edit->type == WORKOUT_A) {
+                return workout_to_edit->row;
             } else {
-                return loc->workout.deadlift;
+                return workout_to_edit->deadlift;
             }
         case SELECTION_CANCEL:
         case SELECTION_SAVE:
@@ -128,54 +126,69 @@ void load_selection_string(char* output, SelectionIndex index) {
     }
 }
 
-void load_selection_tls(void) {
-    load_selection_string(loc->selection_string, loc->selection_index);
-    text_layer_set_text(loc->selection, loc->selection_string);
-    if (loc->selection_index == 0) {
-        text_layer_set_text(loc->above_selection, "");
-    } else {
-        load_selection_string(loc->above_selection_string, loc->selection_index-1);
-        text_layer_set_text(loc->above_selection, loc->above_selection_string);
-    }
-    if (loc->selection_index == SELECTION_SAVE) {
-        text_layer_set_text(loc->below_selection, "");
-    } else {
-        load_selection_string(loc->below_selection_string, loc->selection_index+1);
-        text_layer_set_text(loc->below_selection, loc->below_selection_string);
-    }
-}
-
 void init_selection_tl(TextLayer *tl) {
     layer_add_child(get_window_layer(), text_layer_get_layer(tl));
     text_layer_set_text_alignment(tl, GTextAlignmentCenter);
     text_layer_set_font(tl, fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21));
     text_layer_set_text_color(tl, GColorWhite);
 }
-    
-void edit_workout_view_destructor(void) {
-    text_layer_destroy(loc->above_selection);
-    text_layer_destroy(loc->selection);
-    text_layer_destroy(loc->below_selection);
-    free(loc);
+
+void return_to_previous_view(void) {
+    close_view(&edit_workout_view);
+    open_view(&new_workout_view);    
 }
 
-void edit_workout_view_constructor(void) {
-    loc = malloc(sizeof(EditWorkoutViewData));
-    loc->selection_index = 0;
-    load_next_workout(&loc->workout);
-    
-    int width = get_window_bounds().size.w;
-    int height = get_window_bounds().size.h / 4;
-    loc->above_selection = text_layer_create(GRect(0, height, width, height));
-    loc->selection = text_layer_create(GRect(0, 2*height, width, height));
-    loc->below_selection = text_layer_create(GRect(0, 3*height, width, height));
-    text_layer_set_background_color(loc->above_selection, GColorBlack);
-    text_layer_set_background_color(loc->below_selection, GColorBlack);
-    init_selection_tl(loc->above_selection);
-    init_selection_tl(loc->selection);
-    init_selection_tl(loc->below_selection);
-    
-    load_selection_tls();
+//======================================================================
+// MenuLayer Callbacks
+//======================================================================
+static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
+    return SELECTION_CHOICE_CNT;
+}
+
+static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) { 
+    char tempString[20];
+    load_selection_string(tempString, cell_index->row);
+    menu_cell_basic_draw(ctx, cell_layer, tempString, NULL, NULL);
+}
+
+void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
+    if (get_selection_index() == SELECTION_CANCEL) {
+        return_to_previous_view();
+        return;
+    }    
+    if (get_selection_index() == SELECTION_SAVE) {
+        save_next_workout(workout_to_edit);
+        return_to_previous_view();
+        return;        
+    }
+    make_selection();
+}
+
+//======================================================================
+// View Callbacks
+//======================================================================
+void edit_workout_view_select_pressed(void) {
+    unselect();
+}
+
+void edit_workout_view_destructor(void) {
+    menu_layer_destroy(edit_workout_ml);
+    free(workout_to_edit);
+}
+
+void edit_workout_view_constructor(void) {    
+    workout_to_edit = malloc(sizeof(Workout));
+    load_next_workout(workout_to_edit);
+    edit_workout_ml = menu_layer_create(editable_window_bounds());
+    menu_layer_set_callbacks(edit_workout_ml, NULL, (MenuLayerCallbacks){
+        .get_num_sections = NULL,
+        .get_num_rows = menu_get_num_rows_callback,
+        .get_header_height = NULL,
+        .draw_header = NULL,
+        .draw_row = menu_draw_row_callback,
+        .select_click = menu_select_callback,
+    });
+    layer_add_child(get_window_layer(), menu_layer_get_layer(edit_workout_ml));
     unselect();
 }
 
@@ -191,74 +204,42 @@ void decrement_lift(int* to_decrement) {
 
 void increment_selection() {
     int *to_increment = NULL;
-    if (loc->selection_index == SELECTION_LIFT1) to_increment = &loc->workout.squat;
-    else if (loc->workout.type == WORKOUT_A) {
-        if (loc->selection_index == SELECTION_LIFT2) to_increment = &loc->workout.bench;
-        else to_increment = &loc->workout.row;
+    if (get_selection_index() == SELECTION_LIFT1) to_increment = &workout_to_edit->squat;
+    else if (workout_to_edit->type == WORKOUT_A) {
+        if (get_selection_index() == SELECTION_LIFT2) to_increment = &workout_to_edit->bench;
+        else to_increment = &workout_to_edit->row;
     } else {
-        if (loc->selection_index == SELECTION_LIFT2) to_increment = &loc->workout.overhead;
-        else to_increment = &loc->workout.deadlift;        
+        if (get_selection_index() == SELECTION_LIFT2) to_increment = &workout_to_edit->overhead;
+        else to_increment = &workout_to_edit->deadlift;        
     }
     if (to_increment == NULL) return; // error
     increment_lift(to_increment);
-    load_selection_tls();
+    redraw_menu();
 }
 
 void decrement_selection() {
     int *to_decrement = NULL;
-    if (loc->selection_index == SELECTION_LIFT1) to_decrement = &loc->workout.squat;
-    else if (loc->workout.type == WORKOUT_A) {
-        if (loc->selection_index == SELECTION_LIFT2) to_decrement = &loc->workout.bench;
-        else to_decrement = &loc->workout.row;
+    if (get_selection_index() == SELECTION_LIFT1) to_decrement = &workout_to_edit->squat;
+    else if (workout_to_edit->type == WORKOUT_A) {
+        if (get_selection_index() == SELECTION_LIFT2) to_decrement = &workout_to_edit->bench;
+        else to_decrement = &workout_to_edit->row;
     } else {
-        if (loc->selection_index == SELECTION_LIFT2) to_decrement = &loc->workout.overhead;
-        else to_decrement = &loc->workout.deadlift;        
+        if (get_selection_index() == SELECTION_LIFT2) to_decrement = &workout_to_edit->overhead;
+        else to_decrement = &workout_to_edit->deadlift;        
     }
     if (to_decrement == NULL) return; // error
     decrement_lift(to_decrement);
-    load_selection_tls();
+    redraw_menu();
 }
 
 void edit_workout_view_up_pressed(void) {
-    if (loc->selected) {
-        increment_selection();
-        return;
-    }
-    if (loc->selection_index > 0) {
-        loc->selection_index--;
-        load_selection_tls();
-    }
+    increment_selection();
 }
 
 void edit_workout_view_down_pressed(void) {
-    if (loc->selected) {
-        decrement_selection();
-        return;
-    }
-    if (loc->selection_index < SELECTION_SAVE) {
-        loc->selection_index++;
-        load_selection_tls();
-    }    
+    decrement_selection();  
 }
 
-void return_to_previous_view(void) {
-    close_view(&edit_workout_view);
-    open_view(&new_workout_view);    
-}
-
-void edit_workout_view_select_pressed(void) {
-    if (loc->selection_index == SELECTION_CANCEL) {
-        return_to_previous_view();
-        return;
-    }    
-    if (loc->selection_index == SELECTION_SAVE) {
-        save_next_workout(&loc->workout);
-        return_to_previous_view();
-        return;        
-    }
-    if (loc->selected) unselect();
-    else make_selection();
-}
 //======================================================================
 // Public Functions
 //======================================================================
