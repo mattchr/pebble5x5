@@ -31,7 +31,7 @@ extern const struct View *current_view;
 //======================================================================
 Layer *get_window_layer(void);
 GRect get_window_bounds(void);
-GRect editable_window_bounds(void);
+GRect editable_window_bounds(void); 
 void set_center_tl(const char *label, const char *font);
 void set_down_tl(const char *text, const char *font);
 void set_up_tl(const char *text, const char *font);

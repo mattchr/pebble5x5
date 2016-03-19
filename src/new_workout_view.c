@@ -57,17 +57,6 @@ void new_workout_view_destructor(void) {
     text_layer_destroy(new_workout_tl);
 }
 
-void new_workout_view_select_handler(void) {
-    Workout next;
-    Workout previous;
-    calculate_next_workout(&next);
-    load_next_workout(&previous);
-    save_next_workout(&next);
-    save_previous_workout(&previous);
-    close_view(current_view);
-    open_view(current_view);
-}
-
 //======================================================================
 // Public Functions
 //======================================================================

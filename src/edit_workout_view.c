@@ -10,7 +10,7 @@
 //======================================================================
 // Private Definitions
 //======================================================================
-#define SELECTION_STRING_LEN 17
+#define SELECTION_STRING_LEN 20
 
 typedef enum {
     SELECTION_CANCEL,
@@ -66,49 +66,39 @@ void unselect(void) {
     redraw_menu();
 }
 
+Exercise exercise_from_selection_index(SelectionIndex index) {
+    switch (index) {
+        case SELECTION_LIFT1: return exercise_from_workout_index(workout_to_edit, 0);
+        case SELECTION_LIFT2: return exercise_from_workout_index(workout_to_edit, 1);
+        case SELECTION_LIFT3: return exercise_from_workout_index(workout_to_edit, 2);
+        default:
+            return -1;
+    }
+}
+
 SelectionIndex get_selection_index(void) {
     return menu_layer_get_selected_index(edit_workout_ml).row;
 }
 
 const char *get_selection_text(SelectionIndex index) {
+    
     switch (index) {
         case SELECTION_CANCEL:
             return "CANCEL";
-        case SELECTION_LIFT1:
-            return "SQUAT";
-        case SELECTION_LIFT2:                          
-            if (workout_to_edit->type == WORKOUT_A) {
-                return "BENCH";
-            } else {
-                return "OVERHEAD";
-            }
-        case SELECTION_LIFT3:                         
-            if (workout_to_edit->type == WORKOUT_A) {
-                return "ROW";
-            } else {
-                return "DEADLIFT";
-            }
         case SELECTION_SAVE:
             return "SAVE";
+        case SELECTION_LIFT1:
+        case SELECTION_LIFT2:
+        case SELECTION_LIFT3:
+            return exercise_name_upper_short(exercise_from_selection_index(index));
         default: return "";
     }
 }
 int get_selection_weight(SelectionIndex index) {
     switch (index) {
-        case SELECTION_LIFT1:
-            return workout_to_edit->squat;
-        case SELECTION_LIFT2:                          
-            if (workout_to_edit->type == WORKOUT_A) {
-                return workout_to_edit->bench;
-            } else {
-                return workout_to_edit->overhead;
-            }
-        case SELECTION_LIFT3:                         
-            if (workout_to_edit->type == WORKOUT_A) {
-                return workout_to_edit->row;
-            } else {
-                return workout_to_edit->deadlift;
-            }
+        case SELECTION_LIFT1: return workout_to_edit->lifts[0];
+        case SELECTION_LIFT2: return workout_to_edit->lifts[1];    
+        case SELECTION_LIFT3: return workout_to_edit->lifts[2];
         case SELECTION_CANCEL:
         case SELECTION_SAVE:
             return -1;
@@ -146,12 +136,12 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t secti
 }
 
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) { 
-    char tempString[20];
+    char tempString[SELECTION_STRING_LEN];
     load_selection_string(tempString, cell_index->row);
     menu_cell_basic_draw(ctx, cell_layer, tempString, NULL, NULL);
 }
 
-void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
+static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     if (get_selection_index() == SELECTION_CANCEL) {
         return_to_previous_view();
         return;
@@ -189,6 +179,7 @@ void edit_workout_view_constructor(void) {
         .select_click = menu_select_callback,
     });
     layer_add_child(get_window_layer(), menu_layer_get_layer(edit_workout_ml));
+    menu_layer_set_normal_colors(edit_workout_ml, GColorBlack, GColorWhite);
     unselect();
 }
 
