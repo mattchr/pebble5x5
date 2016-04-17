@@ -167,11 +167,14 @@ uint8_t *reps_for_exercise(Workout *workout, Exercise exercise) {
     }
 }
 
-void increment_exercise_rep(Workout *workout, Exercise exercise, uint8_t index) {
+void decrement_exercise_rep(Workout *workout, Exercise exercise, uint8_t index) {
     uint8_t *to_increment;
     to_increment = &(reps_for_exercise(workout, exercise)[index]);
-    *to_increment += 1;
-    if (*to_increment > 5) *to_increment = 0;
+    if (*to_increment == 0) {
+        *to_increment = 5;
+    } else {
+        *to_increment -= 1;
+    }
 }
 
 

@@ -134,7 +134,7 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data){
     if (cell_index->section == SELECTION_BACK) return cancel_active_workout();
     if (cell_index->section == SELECTION_DONE) return complete_active_workout();
-    increment_exercise_rep(active_workout, exercise_from_selection(cell_index->section), cell_index->row);
+    decrement_exercise_rep(active_workout, exercise_from_selection(cell_index->section), cell_index->row);
     menu_layer_reload_data(active_workout_ml);
 }
 

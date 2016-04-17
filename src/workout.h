@@ -83,5 +83,5 @@ const char *exercise_name_lower(Exercise exercise);
 Exercise exercise_from_workout_index(Workout *workout, uint8_t index);
 uint8_t *reps_for_exercise(Workout *workout, Exercise exercise);
 int weight_for_exercise(Workout *workout, Exercise exercise);
-void increment_exercise_rep(Workout *workout, Exercise exercise, uint8_t index);
+void decrement_exercise_rep(Workout *workout, Exercise exercise, uint8_t index);
 bool is_exercise_finished(Workout *workout, Exercise exercise);
